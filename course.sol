@@ -1,3 +1,6 @@
+// need to declare now in solidity 4 and above
+pragma solidity ^0.4.0;
+
 contract ownedByAlan{
 	
 	string public brandName = "Alan";
@@ -5,7 +8,7 @@ contract ownedByAlan{
 	address public owner;
 
 	// constructor funtion to set the owner to be the address of the sender of the contract
-	function ownedByAlan(){
+	function ownedByAlan() public {
 		owner = msg.sender;
 	}
 
@@ -13,10 +16,11 @@ contract ownedByAlan{
 	modifier onlyOwner {
 		// if the sender is not the owner, don't let them continue
 		if(msg.sender != owner){
-			throw;
+			// throw is deprecated, now revert();
+			revert();
 		// else, let them execute function
 		}else{
-			_
+			_;
 		}
 	}
 
@@ -24,9 +28,9 @@ contract ownedByAlan{
 
 	// allow the owner to kill the contract
 	// you can't destory a contract but you can mute it, and make functionality no longer work
-	function killTheContract() onlyOwner {
+	function killTheContract() public onlyOwner {
 		// once you tell the contract to commit suicide, any ether stored in the contract will be sent to the owner of the contract
-		suicide(owner);
+		selfdestruct(owner);
 	}
 }
 
@@ -45,15 +49,17 @@ contract EthereumCourse is ownedByAlan{
 
 	mapping(address=>Student) public myStudents;
 
-	function Register(string _typeYourName, uint _whatIsYourAge){
-		if(msg.value == fee){
+	// need the payable keyword to make the function able to accept a registration fee
+	function Register(string _typeYourName, uint _whatIsYourAge) public payable {
+		if(msg.value == fee) {
 			myStudents[msg.sender] = Student({
 				studentName: _typeYourName,
 				studentAge: _whatIsYourAge,
 				active: true
 			});
 		} else {
-			throw;
+			// throw is deprecated, now revert();
+			revert();
 		}
 	}
 
@@ -61,17 +67,18 @@ contract EthereumCourse is ownedByAlan{
 		// now is a built in function to give the current timestamp
 		// inserted the current timestamp at the time, lets you use minutes, if specified
 		if(now < 1514028558 + 10 minutes){
-			throw;
+			// throw is deprecated, now revert();
+			revert();
 		} else {
 			// if now is true, allow user to register
-			_
+			_;
 		}
 	}
 
 	// only person who can set the registration fee is the owner, one who created the contract
 	// onlyAfterTenMinutes is so that the owner can only interact with contract within 10 minutes, to give users
 	// assurance that once a fee has been set, it will stay the same
-	function setRegistrationFee(uint256 _fee) onlyOwner onlyAfterTenMinutes {
+	function setRegistrationFee(uint256 _fee) public onlyOwner onlyAfterTenMinutes {
 		fee = _fee;
 	}
 }
